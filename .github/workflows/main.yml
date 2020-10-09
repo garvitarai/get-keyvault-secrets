@@ -1,0 +1,29 @@
+# File: .github/workflows/workflow.yml
+
+on: [push]
+
+name: AzureStack KeyVault Sample
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    # checkout the repo
+    - name: Check out repository
+      uses: actions/checkout@v2
+    - name: Use Private Azure Login Action
+      uses: Azure/login@AzureStackSupport-Beta
+      with:
+        creds: ${{ secrets.AZURESTACK_PPE2_CREDENTIALS }}
+        environment: AzureStack
+    - name: Build
+      run: |
+        npm install
+        npm run build
+    - name: Use Local KeyVault Action
+      uses: ./
+      with:
+        environment: AzureStack
+        keyvault: newkeyvault
+        secrets: 'garvitasecret'  # comma separated list of secret keys that need to be fetched from the Key Vault 
+      id: myGetSecretAction
